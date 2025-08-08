@@ -1,0 +1,53 @@
+#include "philosophers.h"
+
+int is_sim_over(t_data *data)
+{
+	int res;
+	pthread_mutex_lock(&data->death_lock);
+	res = data->stop_sim;
+	pthread_mutex_unlock(&data->death_lock);
+	return (res);
+}
+
+int	one_philo(t_philo *ph)
+{
+	if (ph->data->n_philos == 1)
+	{
+		pthread_mutex_lock(ph->left_fork);
+		print_status(ph, "has taken a fork");
+		while (!is_sim_over(ph->data))
+			ft_usleep(10);
+		pthread_mutex_unlock(ph->left_fork);
+		return (1);
+	}
+	return (0);
+}
+
+void    *philo_routine(void *arg)
+{
+	t_philo *ph = (t_philo *)arg;
+
+	if(one_philo(ph))
+		return (NULL);
+	if (ph->id % 2 == 0)
+		ft_usleep(100);
+	while (!is_sim_over(ph->data))
+	{
+		print_status(ph, "is thinking");
+		pthread_mutex_lock(ph->left_fork);
+		print_status(ph, "has taken a fork");
+		pthread_mutex_lock(ph->right_fork);
+		print_status(ph, "has taken a fork");
+		print_status(ph, "is eating");
+		pthread_mutex_lock(&ph->data->death_lock);
+		ph->last_meal = current_time_ms();
+		pthread_mutex_unlock(&ph->data->death_lock);
+		ft_usleep(ph->data->time_to_eat);
+		ph->meals_eaten++;
+		pthread_mutex_unlock(ph->right_fork);
+		pthread_mutex_unlock(ph->left_fork);
+		print_status(ph, "is sleeping");
+		ft_usleep(ph->data->time_to_sleep);
+	}
+	return (NULL);
+}
