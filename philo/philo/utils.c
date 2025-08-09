@@ -25,10 +25,12 @@ long long time_since_start(t_data *data)
 
 void print_status(t_philo *ph, const char *msg)
 {
-	pthread_mutex_lock(&ph->data->print_lock);
 	if (!is_sim_over(ph->data))
+	{
+		pthread_mutex_lock(&ph->data->print_lock);
 		printf("%lld %d %s\n", time_since_start(ph->data), ph->id + 1, msg);
-	pthread_mutex_unlock(&ph->data->print_lock);
+		pthread_mutex_unlock(&ph->data->print_lock);
+	}
 }
 
 void ft_usleep(long long milliseconds)

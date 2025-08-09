@@ -21,22 +21,32 @@ void	init_data(int ac,char **av, t_data *data)
 		data->meals_required = -1;
 }
 
-void	init_philos(t_data *data)
+void init_philos(t_data *data)
 {
-	int	i;
+    int i = 0;
 
-	i = 0;
-	while (i < data->n_philos)
-	{
-		data->philos[i].id = i;
-		data->philos[i].meals_eaten = 0;
-		data->philos[i].last_meal = current_time_ms();
-		data->philos[i].left_fork = &data->forks[i];
-		data->philos[i].right_fork = &data->forks[(i + 1) % data->n_philos];
-		data->philos[i].data = data;
-		i++;
-	}
+    while (i < data->n_philos)
+    {
+        data->philos[i].id = i;
+        data->philos[i].meals_eaten = 0;
+        data->philos[i].last_meal = current_time_ms();
+        pthread_mutex_t *left  = &data->forks[i];
+        pthread_mutex_t *right = &data->forks[(i + 1) % data->n_philos];
+        if (left < right)
+        {
+            data->philos[i].first_fork = left;
+            data->philos[i].second_fork = right;
+        }
+        else
+        {
+            data->philos[i].first_fork = right;
+            data->philos[i].second_fork = left;
+        }
+        data->philos[i].data = data;
+        i++;
+    }
 }
+
 
 int	parse_args(int ac, char **av, t_data *data)
 {

@@ -16,6 +16,8 @@ typedef struct s_philo {
 	pthread_t       thread;
 	pthread_mutex_t *left_fork;
 	pthread_mutex_t *right_fork;
+	pthread_mutex_t *first_fork;
+	pthread_mutex_t *second_fork;
 	t_data          *data;
 } t_philo;
 
