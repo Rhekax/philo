@@ -18,7 +18,11 @@ void	get_forks(t_philo *ph)
 	print_status(ph, "has taken a fork");
 	pthread_mutex_lock(ph->second_fork);
 	print_status(ph, "has taken a fork");
+	pthread_mutex_lock(&ph->data->death_lock);
+	ph->last_meal = current_time_ms();
+	pthread_mutex_unlock(&ph->data->death_lock);
 	print_status(ph, "is eating");
+	ft_usleep(ph->data->time_to_eat);
 }
 
 int	is_sim_over(t_data *data)
@@ -53,20 +57,16 @@ void	*philo_routine(void *arg)
 	if (one_philo(ph))
 		return (NULL);
 	if (ph->id % 2 != 0)
-		usleep(100);
+		ft_usleep(100);
 	while (!is_sim_over(ph->data))
 	{
 		print_status(ph, "is thinking");
 		get_forks(ph);
-		pthread_mutex_lock(&ph->data->death_lock);
-		ph->last_meal = current_time_ms();
-		pthread_mutex_unlock(&ph->data->death_lock);
-		ft_usleep(ph->data->time_to_eat);
 		pthread_mutex_lock(&ph->data->eaten_lock);
 		ph->meals_eaten++;
 		pthread_mutex_unlock(&ph->data->eaten_lock);
-		pthread_mutex_unlock(ph->second_fork);
 		pthread_mutex_unlock(ph->first_fork);
+		pthread_mutex_unlock(ph->second_fork);
 		print_status(ph, "is sleeping");
 		ft_usleep(ph->data->time_to_sleep);
 	}

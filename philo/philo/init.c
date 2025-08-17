@@ -70,15 +70,15 @@ void	init_philos(t_data *data)
 		data->philos[i].data = data;
 		left = &data->forks[i];
 		right = &data->forks[(i + 1) % data->n_philos];
-		if (left < right)
+		if (i % 2 == 0)
 		{
-			data->philos[i].first_fork = left;
-			data->philos[i].second_fork = right;
+		    data->philos[i].first_fork = left;
+		    data->philos[i].second_fork = right;
 		}
 		else
 		{
-			data->philos[i].first_fork = right;
-			data->philos[i].second_fork = left;
+		    data->philos[i].first_fork = right;
+		    data->philos[i].second_fork = left;
 		}
 		i++;
 	}
