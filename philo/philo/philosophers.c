@@ -1,8 +1,29 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philosophers.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mdursun <mdursun@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/17 17:42:30 by mdursun           #+#    #+#             */
+/*   Updated: 2025/08/17 17:42:30 by mdursun          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philosophers.h"
 
-int is_sim_over(t_data *data)
+void	get_forks(t_philo *ph)
 {
-	int res;
+	pthread_mutex_lock(ph->first_fork);
+	print_status(ph, "has taken a fork");
+	pthread_mutex_lock(ph->second_fork);
+	print_status(ph, "has taken a fork");
+	print_status(ph, "is eating");
+}
+
+int	is_sim_over(t_data *data)
+{
+	int	res;
 
 	pthread_mutex_lock(&data->death_lock);
 	res = data->stop_sim;
@@ -24,38 +45,30 @@ int	one_philo(t_philo *ph)
 	return (0);
 }
 
-void *philo_routine(void *arg)
+void	*philo_routine(void *arg)
 {
-    t_philo *ph = (t_philo *)arg;
+	t_philo	*ph;
 
-    if (one_philo(ph))
-        return NULL;
-    if (ph->id % 2 != 0)
-        usleep(100);
-
-    while (!is_sim_over(ph->data))
-    {
-        print_status(ph, "is thinking");
-
-        pthread_mutex_lock(ph->first_fork);
-        print_status(ph, "has taken a fork");
-
-        pthread_mutex_lock(ph->second_fork);
-        print_status(ph, "has taken a fork");
-
-        print_status(ph, "is eating");
-        pthread_mutex_lock(&ph->data->death_lock);
-        ph->last_meal = current_time_ms();
-        pthread_mutex_unlock(&ph->data->death_lock);
-
-        ft_usleep(ph->data->time_to_eat);
-        ph->meals_eaten++;
-
-        pthread_mutex_unlock(ph->second_fork);
-        pthread_mutex_unlock(ph->first_fork);
-
-        print_status(ph, "is sleeping");
-        ft_usleep(ph->data->time_to_sleep);
-    }
-    return NULL;
+	ph = (t_philo *)arg;
+	if (one_philo(ph))
+		return (NULL);
+	if (ph->id % 2 != 0)
+		usleep(100);
+	while (!is_sim_over(ph->data))
+	{
+		print_status(ph, "is thinking");
+		get_forks(ph);
+		pthread_mutex_lock(&ph->data->death_lock);
+		ph->last_meal = current_time_ms();
+		pthread_mutex_unlock(&ph->data->death_lock);
+		ft_usleep(ph->data->time_to_eat);
+		pthread_mutex_lock(&ph->data->eaten_lock);
+		ph->meals_eaten++;
+		pthread_mutex_unlock(&ph->data->eaten_lock);
+		pthread_mutex_unlock(ph->second_fork);
+		pthread_mutex_unlock(ph->first_fork);
+		print_status(ph, "is sleeping");
+		ft_usleep(ph->data->time_to_sleep);
+	}
+	return (NULL);
 }
