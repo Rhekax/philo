@@ -35,11 +35,11 @@ int	one_philo(t_philo *ph)
 {
 	if (ph->data->n_philos == 1)
 	{
-		pthread_mutex_lock(ph->left_fork);
+		pthread_mutex_lock(ph->first_fork);
 		print_status(ph, "has taken a fork");
 		while (!is_sim_over(ph->data))
 			ft_usleep(10);
-		pthread_mutex_unlock(ph->left_fork);
+		pthread_mutex_unlock(ph->first_fork);
 		return (1);
 	}
 	return (0);
