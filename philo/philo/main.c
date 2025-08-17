@@ -6,7 +6,7 @@
 /*   By: mdursun <mdursun@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 17:42:27 by mdursun           #+#    #+#             */
-/*   Updated: 2025/08/17 20:33:27 by mdursun          ###   ########.fr       */
+/*   Updated: 2025/08/17 20:42:00 by mdursun          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,10 @@ int	main(int ac, char **av)
 
 	i = 0;
 	if (!parse_args(ac, av, &data))
+	{
+		printf("Error : Invalid arguments\n");
 		return (1);
+	}
 	data.start_time = current_time_ms();
 	while (i < data.n_philos)
 	{

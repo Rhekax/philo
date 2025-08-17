@@ -12,14 +12,35 @@
 
 #include "philosophers.h"
 
-int	ft_atoi(const char *str)
+int	ft_parse(int ac, char **av)
 {
-	long	res;
+	int	i;
 
-	res = 0;
-	while (*str >= '0' && *str <= '9')
-		res = res * 10 + (*str++ - '0');
-	return ((int)res);
+	i = 1;
+	if (ac != 5 && ac != 6)
+		return (1);
+	while (i < ac)
+	{
+		if (!is_number(av[i]) || ft_atoi(av[i]) <= 0)
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+int	is_number(const char *str)
+{
+	if (!str || !*str)
+		return (0);
+	if (*str == '+')
+		str++;
+	while (*str)
+	{
+		if (*str < '0' || *str > '9')
+			return (0);
+		str++;
+	}
+	return (1);
 }
 
 void	init_data(int ac, char **av, t_data *data)
@@ -68,7 +89,7 @@ int	parse_args(int ac, char **av, t_data *data)
 	int	i;
 
 	i = 0;
-	if (ac != 5 && ac != 6)
+	if (ft_parse(ac, av))
 		return (0);
 	init_data(ac, av, data);
 	if (data->n_philos < 1 || data->n_philos > 200

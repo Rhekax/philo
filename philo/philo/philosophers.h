@@ -60,5 +60,8 @@ int			is_sim_over(t_data *data);
 void		ft_usleep(long long milliseconds);
 void		check_eaten(t_data *data, int done);
 void		death(t_data *data, t_philo *p);
+int			ft_atoi(const char *str);
+int			is_number(const char *str);
+int			ft_parse(int ac, char **av);
 
 #endif
